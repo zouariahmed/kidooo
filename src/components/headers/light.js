@@ -9,6 +9,7 @@ import useAnimatedNavToggler from "../../helpers/useAnimatedNavToggler.js";
 import logo from "../../images/logo.svg";
 import { ReactComponent as MenuIcon } from "feather-icons/dist/icons/menu.svg";
 import { ReactComponent as CloseIcon } from "feather-icons/dist/icons/x.svg";
+import useAuth from "hooks/auth/useAuth.js";
 
 const Header = tw.header`
   flex justify-between items-center
@@ -57,6 +58,7 @@ export const DesktopNavLinks = tw.nav`
 `;
 
 export default ({ roundedHeaderButton = false, logoLink, links, className, collapseBreakpointClass = "lg" }) => {
+  const {isAuthenticated,profilePicture} =useAuth() 
   /*
    * This header component accepts an optionals "links" prop that specifies the links to render in the navbar.
    * This links props should be an array of "NavLinks" components which is exported from this file.
@@ -74,10 +76,18 @@ export default ({ roundedHeaderButton = false, logoLink, links, className, colla
     <NavLinks key={1}>
       <NavLink href="/about">About</NavLink>
       <NavLink href="/contact">Contact Us</NavLink>
-      <NavLink href="/login" tw="lg:ml-12!">
-        Login
-      </NavLink>
-      <PrimaryLink css={roundedHeaderButton && tw`rounded-full`}href="/signup">Sign Up</PrimaryLink>
+      {
+        isAuthenticated ? (
+           <NavLink href="/about"><img src={profilePicture} className="avatar" /> </NavLink>
+        ) : (
+          <>
+          <NavLink href="/login" tw="lg:ml-12!">
+          Login
+        </NavLink>
+        <PrimaryLink css={roundedHeaderButton && tw`rounded-full`}href="/signup">Sign Up</PrimaryLink>
+          </>
+        )
+      }
     </NavLinks>
   ];
 

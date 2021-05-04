@@ -56,7 +56,7 @@ import { css } from "styled-components/macro"; //eslint-disable-line
 // import FAQ from "components/faqs/SingleCol.js";
 // import FAQ from "components/faqs/TwoColumnPrimaryBackground.js";
 
-// import ContactUsForm from "components/forms/SimpleContactUs.js";
+import ContactUsForm from "components/forms/Profile";
 // import ContactUsForm from "components/forms/TwoColContactUsWithIllustration.js";
 // import SubscribeNewsLetterForm from "components/forms/SimpleSubscribeNewsletter.js";
 //
@@ -82,9 +82,11 @@ import TermsOfServicePage from "pages/TermsOfService.js";
 import PrivacyPolicyPage from "pages/PrivacyPolicy.js";
 import ThankYouPage from "ThankYouPage.js";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import useAuth from "hooks/auth/useAuth"
 export default function App() {
 
-
+  const {isAuthenticated} = useAuth() 
+  console.log(isAuthenticated)
   return (
     <Router>
       <Switch>
@@ -108,6 +110,9 @@ export default function App() {
         </Route>
         <Route path="/terms">
           <TermsOfServicePage />
+        </Route>  
+              <Route path="/profile">
+          <ContactUsForm />
         </Route>
         <Route path="/privacy-policy">
           <PrivacyPolicyPage />

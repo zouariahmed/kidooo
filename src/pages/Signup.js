@@ -9,6 +9,10 @@ import logo from "images/logo.svg";
 import googleIconImageSrc from "images/google-icon.png";
 import twitterIconImageSrc from "images/twitter-icon.png";
 import { ReactComponent as SignUpIcon } from "feather-icons/dist/icons/user-plus.svg";
+import { useFirebase, useFirestore } from 'react-redux-firebase';
+import { useHistory } from 'react-router';
+import StyledFirebaseAuth from 'react-firebaseui/FirebaseAuth';
+
 
 const Container = tw(ContainerBase)`min-h-screen bg-primary-900 text-white font-medium flex justify-center -m-8`;
 const Content = tw.div`max-w-screen-xl m-0 sm:mx-20 sm:my-16 bg-white text-gray-900 shadow sm:rounded-lg flex justify-center flex-1`;
@@ -53,28 +57,104 @@ const IllustrationImage = styled.div`
   ${tw`m-12 xl:m-16 w-full max-w-lg bg-contain bg-center bg-no-repeat`}
 `;
 
-export default ({
+const SignUp =  ({
   logoLinkUrl = "#",
   illustrationImageSrc = illustration,
   headingText = "Sign Up For Treact",
-  socialButtons = [
-    {
-      iconImageSrc: googleIconImageSrc,
-      text: "Sign Up With Google",
-      url: "https://google.com"
-    },
-    {
-      iconImageSrc: twitterIconImageSrc,
-      text: "Sign Up With Twitter",
-      url: "https://twitter.com"
-    }
-  ],
   submitButtonText = "Sign Up",
   SubmitButtonIcon = SignUpIcon,
   tosUrl = "#",
   privacyPolicyUrl = "#",
   signInUrl = "#"
-}) => (
+}) => {
+  
+  function ErrorsDisplay({ errors }) {
+    let errorsDisplay = null;
+    if (errors.length>0) {
+      errorsDisplay = (
+        <div>
+          <h2 className="errors__signup">OOps !</h2>
+          <div className="validation-errors">
+            <ul>
+              {errors.map((error, i) => <li key={i}>{error}</li>)}
+            </ul>
+          </div>
+        </div>
+      );
+    }
+  
+    return errorsDisplay;
+  }
+   
+  const firebase = useFirebase();
+
+  const firestore = useFirestore();
+
+  const history = useHistory();
+
+  const uiConfig = {
+    signInFlow: "popup",
+    signInSuccessUrl: '/',
+    signInOptions: [
+      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+    ],
+    callbacks: {
+      signInSuccessWithAuthResult: (authResult, redirectUrl) =>{
+          if(authResult.additionalUserInfo.isNewUser){
+          const user = {
+            id:authResult.user.uid,
+            fullName:authResult.user.displayName,
+            email:authResult.user.email,
+            picture:authResult.user.photoURL,
+          }
+          history.push('/');
+          firestore.collection('/users').doc(user.id).set(user)
+          .then(err=>{
+          })
+          .catch(err=>{
+            history.push('/error');
+          });
+        }else{
+          history.push('/')
+        }
+        }
+      },
+  }
+  const [email,setEmail] = React.useState("")
+  const [password,setPassword] = React.useState("")
+  const [passwordConf,setPasswordConf] = React.useState("")
+  const [errors,setErrors] = React.useState([])
+  const db = useFirestore();
+
+  const submit = (e) => {
+    e.preventDefault()
+    if(passwordConf!==password){
+      const matching = 'password and confirmation are not the same ';
+      setErrors([...errors,matching])
+    }
+   else{
+    firebase.auth().createUserWithEmailAndPassword(email,password).then(u=>{
+        history.push({ pathname: '/', state: { newUserCreated: true } });
+       let user = {id:u.user.uid,email,password}
+       if(u.user && u.user.emailVerified === false){
+        u.user.sendEmailVerification().then(function(){
+        });}
+     db.collection('users').doc(u.user.uid).set(user)
+      .then(err=>{
+          firebase.auth().signInWithEmailAndPassword(email,password).then(()=>{
+          })
+      })
+      .catch(err=>{
+          setErrors([...errors,err])
+      });
+  }).catch(e=>{
+    setErrors([e.message])
+  });  
+
+   }
+  }
+
+  return (
   <AnimationRevealPage>
     <Container>
       <Content>
@@ -85,22 +165,19 @@ export default ({
           <MainContent>
             <Heading>{headingText}</Heading>
             <FormContainer>
-              <SocialButtonsContainer>
-                {socialButtons.map((socialButton, index) => (
-                  <SocialButton key={index} href={socialButton.url}>
-                    <span className="iconContainer">
-                      <img src={socialButton.iconImageSrc} className="icon" alt="" />
-                    </span>
-                    <span className="text">{socialButton.text}</span>
-                  </SocialButton>
-                ))}
-              </SocialButtonsContainer>
+            <StyledFirebaseAuth
+            uiConfig={uiConfig}
+            firebaseAuth={firebase.auth()}
+            style={{width:"100%"}}
+          />
               <DividerTextContainer>
                 <DividerText>Or Sign up with your e-mail</DividerText>
               </DividerTextContainer>
-              <Form>
-                <Input type="email" placeholder="Email" />
-                <Input type="password" placeholder="Password" />
+              <ErrorsDisplay errors={errors} />
+              <Form onSubmit={submit}>
+                <Input type="email" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)} />
+                <Input type="password" placeholder="Password" value={password} onChange={(e)=>setPassword(e.target.value)} />
+                <Input type="password" placeholder="Confirm Password" value={passwordConf} onChange={(e)=>setPasswordConf(e.target.value)} />
                 <SubmitButton type="submit">
                   <SubmitButtonIcon className="icon" />
                   <span className="text">{submitButtonText}</span>
@@ -132,4 +209,6 @@ export default ({
       </Content>
     </Container>
   </AnimationRevealPage>
-);
+)
+};
+export default SignUp

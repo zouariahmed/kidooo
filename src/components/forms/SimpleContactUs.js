@@ -40,7 +40,7 @@ export default () => {
       <Content>
         <FormContainer>
           <div tw="mx-auto max-w-4xl">
-            <h2>Organize an Event</h2>
+            <h2>Profile Information</h2>
             <form action="#">
               <TwoColumn>
                 <Column>
