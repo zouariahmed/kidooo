@@ -7,9 +7,7 @@ export const DELETE_ALL_FROM_CART = "DELETE_ALL_FROM_CART";
 export const addToCart = (
   item,
   addToast,
-  peopleCount,
-  selectedDate,
-  selectedTime
+  count,
 ) => {
   return dispatch => {
     if (addToast) {
@@ -19,9 +17,7 @@ export const addToCart = (
       type: ADD_TO_CART,
       payload: {
         ...item,
-        peopleCount,
-        selectedDate,
-        selectedTime
+        count,
       }
     });
   };

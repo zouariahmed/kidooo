@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import tw from "twin.macro";
 import styled from "styled-components";
 import { css } from "styled-components/macro"; //eslint-disable-line
+import { connect } from "react-redux";
 
 import useAnimatedNavToggler from "../../helpers/useAnimatedNavToggler.js";
 
@@ -10,6 +11,8 @@ import logo from "../../images/logo.svg";
 import { ReactComponent as MenuIcon } from "feather-icons/dist/icons/menu.svg";
 import { ReactComponent as CloseIcon } from "feather-icons/dist/icons/x.svg";
 import useAuth from "hooks/auth/useAuth.js";
+import MenuCart from "./MenuCart.js";
+import { deleteFromCart } from "redux/actions/cartActions.js";
 
 const Header = tw.header`
   flex justify-between items-center
@@ -57,7 +60,7 @@ export const DesktopNavLinks = tw.nav`
   hidden lg:flex flex-1 justify-between items-center
 `;
 
-export default ({ roundedHeaderButton = false, logoLink, links, className, collapseBreakpointClass = "lg" }) => {
+const HeaderLight = ({ roundedHeaderButton = false, logoLink, links, className, collapseBreakpointClass = "lg",cartData,deleteFromCart}) => {
   const {isAuthenticated,profilePicture} =useAuth() 
   /*
    * This header component accepts an optionals "links" prop that specifies the links to render in the navbar.
@@ -78,7 +81,7 @@ export default ({ roundedHeaderButton = false, logoLink, links, className, colla
       <NavLink href="/contact">Contact Us</NavLink>
       {
         isAuthenticated ? (
-           <NavLink href="/about"><img src={profilePicture} className="avatar" /> </NavLink>
+           <NavLink href="/profile"><img src={profilePicture} className="avatar" /> </NavLink>
         ) : (
           <>
           <NavLink href="/login" tw="lg:ml-12!">
@@ -96,11 +99,13 @@ export default ({ roundedHeaderButton = false, logoLink, links, className, colla
 
   const defaultLogoLink = (
     <LogoLink href="/">
-      <img src={logo} alt="logo" />
-      Treact
+      <img src="/images/logo.png" alt="logo" />
+      Kidoo
     </LogoLink>
   );
-
+  const handleClick = e => {
+    e.currentTarget.nextSibling.classList.toggle("active");
+  };
   logoLink = logoLink || defaultLogoLink;
   links = links || defaultLinks;
 
@@ -108,6 +113,24 @@ export default ({ roundedHeaderButton = false, logoLink, links, className, colla
     <Header className={className || "header-light"}>
       <DesktopNavLinks css={collapseBreakpointCss.desktopNavLinks}>
         {logoLink}
+        <div
+      className={`header-right-wrap`}
+    >
+      <div className="same-style cart-wrap d-none d-lg-block">
+      <button className="icon-cart" onClick={e => handleClick(e)}>
+          <i className="pe-7s-shopbag" />
+          <span className="count-style">
+            {cartData && cartData.length ? cartData.length : 0}
+          </span>
+        </button>
+        {/* menu cart */}
+        <MenuCart
+          cartData={cartData}
+          deleteFromCart={deleteFromCart}
+        />
+      </div>
+      </div>
+
         {links}
       </DesktopNavLinks>
 
@@ -115,6 +138,24 @@ export default ({ roundedHeaderButton = false, logoLink, links, className, colla
         {logoLink}
         <MobileNavLinks initial={{ x: "150%", display: "none" }} animate={animation} css={collapseBreakpointCss.mobileNavLinks}>
           {links}
+                <div
+      className={`header-right-wrap`}
+    >
+      <div className="same-style cart-wrap d-none d-lg-block">
+      <button className="icon-cart" onClick={e => handleClick(e)}>
+          <i className="pe-7s-shopbag" />
+          <span className="count-style">
+            {cartData && cartData.length ? cartData.length : 0}
+          </span>
+        </button>
+        {/* menu cart */}
+        <MenuCart
+          cartData={cartData}
+          deleteFromCart={deleteFromCart}
+        />
+      </div>
+      </div>
+
         </MobileNavLinks>
         <NavToggle onClick={toggleNavbar} className={showNavLinks ? "open" : "closed"}>
           {showNavLinks ? <CloseIcon tw="w-6 h-6" /> : <MenuIcon tw="w-6 h-6" />}
@@ -152,3 +193,18 @@ const collapseBreakPointCssMap = {
     mobileNavLinksContainer: tw`lg:hidden`
   }
 };
+const mapStateToProps = state => {
+  return {
+    cartData: state.cartData,
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    deleteFromCart: (item, addToast) => {
+      dispatch(deleteFromCart(item, addToast));
+    }
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(HeaderLight);

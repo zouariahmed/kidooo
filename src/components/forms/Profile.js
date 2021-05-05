@@ -45,7 +45,7 @@ const Profile = () => {
   const [region,setRegion] = React.useState(profile?.region)
   const [city,setCity] = React.useState(profile?.city)
   const [address,setAddress] = React.useState(profile?.address)
-  const [dateOfBirth,setDateOfBirth] = React.useState(profile?.dateOfBirth)
+  const [dateOfBirth,setDateOfBirth] = React.useState(profile?.dateOfBirth || "")
   const selectCountry = (val) => {
     setCountry(val);
   };

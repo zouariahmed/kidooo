@@ -140,7 +140,7 @@ export default () => {
           </LogoContainer>
           <CopywrightNotice>&copy; 2018 Treact Inc. All Rights Reserved.</CopywrightNotice>
           <SocialLinksContainer>
-            <SocialLink href="https://facebook.com">
+            <SocialLink href="https://www.facebook.com/NextGenTunisia/">
               <FacebookIcon />
             </SocialLink>
             <SocialLink href="https://twitter.com">

@@ -70,11 +70,13 @@ import ContactUsForm from "components/forms/Profile";
 // import Footer from "components/footers/FiveColumnDark.js";
 // import Footer from "components/footers/MiniCenteredFooter.js";
 
-
+import { ToastProvider } from "react-toast-notifications";
+import "styles/styles.scss"
 import RestaurantLandingPage from "demos/RestaurantLandingPage.js";
 
 /* Inner Pages */
 import LoginPage from "pages/Login.js";
+import Cart from "pages/Cart";
 import SignupPage from "pages/Signup.js";
 import AboutUsPage from "pages/AboutUs.js";
 import ContactUsPage from "pages/ContactUs.js";
@@ -88,6 +90,7 @@ export default function App() {
   const {isAuthenticated} = useAuth() 
   console.log(isAuthenticated)
   return (
+    <ToastProvider placement="bottom-left" autoDismiss>
     <Router>
       <Switch>
         <Route exact path="/">
@@ -117,8 +120,12 @@ export default function App() {
         <Route path="/privacy-policy">
           <PrivacyPolicyPage />
         </Route>
+        <Route path="/cart">
+          <Cart />
+        </Route>
       </Switch>
     </Router>
+    </ToastProvider>
   );
 }
 

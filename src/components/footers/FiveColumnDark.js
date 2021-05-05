@@ -56,7 +56,7 @@ export default () => {
               California 40234
             </CompanyAddress>
             <SocialLinksContainer>
-              <SocialLink href="https://facebook.com">
+              <SocialLink href="https://www.facebook.com/NextGenTunisia/">
                 <FacebookIcon />
               </SocialLink>
               <SocialLink href="https://twitter.com">

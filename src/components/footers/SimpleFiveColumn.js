@@ -47,7 +47,7 @@ export default () => {
             Treact is an Internet Technology company providing design resources such as website templates and themes.
           </CompanyDescription>
           <SocialLinksContainer>
-            <SocialLink href="https://facebook.com">
+            <SocialLink href="https://www.facebook.com/NextGenTunisia/">
               <FacebookIcon />
             </SocialLink>
             <SocialLink href="https://twitter.com">

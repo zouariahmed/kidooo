@@ -4,7 +4,7 @@ import {
   DELETE_FROM_CART,
   DELETE_ALL_FROM_CART
 } from "../actions/cartActions";
-const { uuid: uuid } = require('uuid');
+const { v4: uuid } = require('uuid');
 
 const initState = [];
 
@@ -20,7 +20,7 @@ const cartReducer = (state = initState, action) => {
           ...cartItems,
           {
             ...product,
-            peopleCount: product.peopleCount ? product.peopleCount : 1,
+            count: product.count ? product.count : 1,
             cartItemId: uuid()
           }
         ];
@@ -29,9 +29,9 @@ const cartReducer = (state = initState, action) => {
           item.cartItemId === cartItem.cartItemId
             ? {
                 ...item,
-                peopleCount: product.peopleCount
-                  ? item.peopleCount + product.peopleCount
-                  : item.peopleCount + 1
+                count: product.count
+                  ? item.count + product.count
+                  : item.count + 1
               }
             : item
         );
@@ -40,7 +40,7 @@ const cartReducer = (state = initState, action) => {
   }
 
   if (action.type === DECREASE_QUANTITY) {
-    if (product.peopleCount === 1) {
+    if (product.count === 1) {
       const remainingItems = (cartItems, product) =>
         cartItems.filter(
           cartItem => cartItem.cartItemId !== product.cartItemId
@@ -49,7 +49,7 @@ const cartReducer = (state = initState, action) => {
     } else {
       return cartItems.map(item =>
         item.cartItemId === product.cartItemId
-          ? { ...item, peopleCount: item.peopleCount - 1 }
+          ? { ...item, count: item.count - 1 }
           : item
       );
     }

@@ -46,7 +46,7 @@ export default () => {
             <Link href="#">Reviews</Link>
           </LinksContainer>
           <SocialLinksContainer>
-            <SocialLink href="https://facebook.com">
+            <SocialLink href="https://www.facebook.com/NextGenTunisia/">
               <FacebookIcon />
             </SocialLink>
             <SocialLink href="https://twitter.com">
